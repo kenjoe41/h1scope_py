@@ -25,7 +25,7 @@ def get_programs(programs_queue, p_args):
 
 	while True:
 
-		r = make_api_request(link, p_args.username, arg.apikey)
+		r = make_api_request(link, p_args.username, p_args.apikey)
 		if not r:
 			# We hit an Exception during the request, maybe track them, exit and log errors on too many of them.
 			continue
@@ -45,9 +45,9 @@ def get_programs(programs_queue, p_args):
 				
 				# Parse out Private or Public programs.
 				program_mode = program['attributes'].get('state')
-				if p_args.private and program_mode is 'public_mode':
+				if p_args.private and program_mode == 'public_mode':
 					continue
-				elif p_args.public and program_mode is not 'public_mode':
+				elif p_args.public and program_mode != 'public_mode':
 					continue
 
 				# We should be all done at this level, what did i miss?
@@ -82,9 +82,9 @@ def get_scope(programs_queue, p_args):
 		program = programs_queue.get()
 
 		# Couldn't we have just moved just the Program handle to the queue instead of the whole Program dict, seems heavy but the programs are few so meh.
-		handle = private_program['attributes'].get('handle')
+		handle = program['attributes'].get('handle')
 		link = f'https://api.hackerone.com/v1/hackers/programs/{handle}'
-		r = make_api_request(link, p_args.username, arg.apikey)
+		r = make_api_request(link, p_args.username, p_args.apikey)
 		if not r:
 			continue
 		
