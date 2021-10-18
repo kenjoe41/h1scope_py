@@ -18,7 +18,7 @@ def make_api_request(link, H1_USERNAME, H1_APIKEY):
 # TODO: Have a thread getting Programs while another thread gets the scopes. Might be Golang talking to me.
 # TODO: Look into python concurrent lib.
 # TODO: Add connection retry logic, maybe nested while loop, break out on max retry or on successful connections.
-# Let's hope these queues work jsut fine and ain't overhead and s**t
+# Let's hope these queues work just fine and ain't overhead and s**t
 def get_programs(programs_queue, p_args):
 
 	link = 'https://api.hackerone.com/v1/hackers/programs'

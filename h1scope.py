@@ -9,7 +9,7 @@ from threading import Thread
 
 def main():
 	parser = argparse.ArgumentParser()
-	parser.add_argument("-u", "--username", default=os.environ.get('H1_USERNAME'))
+	parser.add_argument("-u", "--username", default=os.environ.get('H1_USERNAME'), help="Hackerone Username")
 	parser.add_argument("--apikey", default=os.environ.get('H1_APIKEY'), help="Generate APIKEY from https://hackerone.com/settings/api_token/edit")
 	parser.add_argument("--wildcard", action="store_true", help="Get wildcard domains.")
 	parser.add_argument("-cw", action="store_true", help="Clean wildcard domains to pipe to recon tools, *.hackeone.com => hackerone.com")
