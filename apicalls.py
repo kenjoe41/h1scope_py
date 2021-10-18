@@ -139,4 +139,5 @@ def get_scope(programs_queue, p_args):
 			programs_queue.task_done()	
 	except KeyboardInterrupt:
 		# thread.interrupt_main()
+		# Whatever, probably still doesn't work. But since it will be in a script mostly, little use for this. Just Ctrl + Z abd ugly kill it.
 		os._exit()
