@@ -36,6 +36,14 @@ def main():
 	if not p_args.wildcard or p_args.domains or p_args.cidr or p_args.android or p_args.ios or p_args.code or p_args.other:
 		print("No specified scope, getting all in scope items.", file=sys.stderr)
 		p_args.all = True
+
+	if p_args.paid and p_args.vdp:
+		print("Seriously, choose either PAID or VDP programs, or don't specify either to get them all. Smart *ss.", file=sys.stderr)
+		sys.exit(parser.print_usage())
+
+	if p_args.private and p_args.public:
+		print("Seriously? Choose either PRIVATE or PUBLIC programs, or don't specify either to get them all. Smart *ss.", file=sys.stderr)
+		sys.exit(parser.print_usage())
 	
 	programs_queue = Queue()
 	programs_thread = Thread(target=get_programs, args=(programs_queue, p_args), daemon=True).start()
