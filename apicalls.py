@@ -21,49 +21,52 @@ def make_api_request(link, H1_USERNAME, H1_APIKEY):
 # Let's hope these queues work just fine and ain't overhead and s**t
 def get_programs(programs_queue, p_args):
 
-	link = 'https://api.hackerone.com/v1/hackers/programs'
+	try:
 
-	while True:
+		link = 'https://api.hackerone.com/v1/hackers/programs'
 
-		r = make_api_request(link, p_args.username, p_args.apikey)
-		if not r:
-			# We hit an Exception during the request, maybe track them, exit and log errors on too many of them.
-			continue
+		while True:
 
-		if r.ok:
-			rdata = r.json()
+			r = make_api_request(link, p_args.username, p_args.apikey)
+			if not r:
+				# We hit an Exception during the request, maybe track them, exit and log errors on too many of them.
+				continue
 
-			for program in rdata['data']:
-				# If clause spaghetti coming up, i am gonna screw something up definitely. Maybe consider different Queues instead.
+			if r.ok:
+				rdata = r.json()
 
-				# Parse, VDP when we want bounty.
-				if p_args.paid and not program['attributes'].get('offers_bounties'):
-					continue
-				# For some God Almighty reason, someone wants only VDP.
-				elif p_args.vdp and program['attributes'].get('offers_bounties'):
-					continue
+				for program in rdata['data']:
+					# If clause spaghetti coming up, i am gonna screw something up definitely. Maybe consider different Queues instead.
+
+					# Parse, VDP when we want bounty.
+					if p_args.paid and not program['attributes'].get('offers_bounties'):
+						continue
+					# For some God Almighty reason, someone wants only VDP.
+					elif p_args.vdp and program['attributes'].get('offers_bounties'):
+						continue
+					
+					# Parse out Private or Public programs.
+					program_mode = program['attributes'].get('state')
+					if p_args.private and program_mode == 'public_mode':
+						continue
+					elif p_args.public and program_mode != 'public_mode':
+						continue
+
+					# We should be all done at this level, what did i miss?
+					programs_queue.put(program)
+
 				
-				# Parse out Private or Public programs.
-				program_mode = program['attributes'].get('state')
-				if p_args.private and program_mode == 'public_mode':
-					continue
-				elif p_args.public and program_mode != 'public_mode':
-					continue
+				link = rdata['links'].get('next')
+				if not link:
+					# Last page, exit While loop.
+					break
+			else:
+				# Add logic to handle atleast the rate limit, something to consider if concurrent threading comes in play maybe.
+				continue 
 
-				# We should be all done at this level, what did i miss?
-				programs_queue.put(program)
-
-			
-			link = rdata['links'].get('next')
-			if not link:
-				# Last page, exit While loop.
-				break
-		else:
-			# Add logic to handle atleast the rate limit, something to consider if concurrent threading comes in play maybe.
-			continue 
-
-	return
-
+		return
+	except KeyboardInterrupt:
+		os._exit()
 def cleandomain(dmn):
 	# Can't guarantee some domains won't be screwed up, like these clip*sub.domain.com or domain.*
 
