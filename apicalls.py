@@ -125,13 +125,24 @@ def get_scope(programs_queue, p_args):
 					elif p_args.android or p_args.all and asset['attributes']['asset_type'] == 'GOOGLE_PLAY_APP_ID':
 							print(identifier)
 
+					elif p_args.apk or p_args.all and asset['attributes']['asset_type'] == 'OTHER_APK':
+							print(identifier)
+
 					elif p_args.ios or p_args.all and asset['attributes']['asset_type'] == 'APPLE_STORE_APP_ID':
+							print(identifier)
+
+					elif p_args.ipa or p_args.all and asset['attributes']['asset_type'] == 'OTHER_IPA':
 							print(identifier)
 
 					elif p_args.other or p_args.all and asset['attributes']['asset_type'] == 'OTHER':
 							print(identifier)
 
-					# TODO: Add other asset types.
+					elif p_args.hardware or p_args.all and asset['attributes']['asset_type'] == 'HARDWARE':
+							print(identifier)
+
+					elif p_args.windows or p_args.all and asset['attributes']['asset_type'] == 'WINDOWS_APP_STORE_APP_ID':
+							print(identifier)
+							
 			else:
 				# Aaah, something went wrong, either connection issues or Rate limit. Let's worry later about this.
 				continue

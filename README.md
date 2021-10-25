@@ -2,6 +2,6 @@
 
 Will probably get time to write a README, till then:
  ```
-pip install requests
+python -m pip install requests
 python h1scope.py -h
 ```

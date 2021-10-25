@@ -19,7 +19,11 @@ def main():
 	parser.add_argument("--android", action="store_true")
 	parser.add_argument("--ios", action="store_true")
 	parser.add_argument("--code", action="store_true")
-	parser.add_argument("--other", action="store_true") # This covers the executables and others, might need refining if we need only the executables.
+	parser.add_argument("--other", action="store_true")
+	parser.add_argument("--apk", action="store_true")
+	parser.add_argument("--ipa", action="store_true")
+	parser.add_argument("--hardware", action="store_true")
+	parser.add_argument("--windows", action="store_true")
 	parser.add_argument("--all", action="store_true", help="Get all asset types.")
 	parser.add_argument("--private", action="store_true", help="Get only private programs.")
 	parser.add_argument("--public", action="store_true", help="Get only public programs.") # Doesn't hurt to add it, what do i lose.
