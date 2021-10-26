@@ -113,6 +113,7 @@ def get_scope(programs_queue, p_args):
 								print(cleandomain(identifier).strip())
 							else:
 								print(identifier)
+							continue
 						elif p_args.domains or p_args.all and not identifier.startswith('*'):
 							print(identifier)
 
