@@ -1,4 +1,3 @@
-import re
 import os, sys
 import argparse
 from apicalls import make_api_request, get_programs, get_scope

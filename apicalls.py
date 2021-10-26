@@ -1,5 +1,5 @@
 import requests
-import os
+import os, re
 
 def make_api_request(link, H1_USERNAME, H1_APIKEY):
 	try:
