@@ -80,19 +80,11 @@ def cleandomain(dmn):
 		
 	return domain
 
-# Am i using Queues right? couldn't popping items off a list have worked just find? But thats a Queue in the end anyways.
-def get_scope(programs_queue, p_args):
-	try:
-		# Infinity here we come, i swear this is for the Queue. Someone teach me about queues and a better way.
-		while True:
-			program = programs_queue.get()
-
-			# Couldn't we have just moved just the Program handle to the queue instead of the whole Program dict, seems heavy but the programs are few so meh.
-			handle = program['attributes'].get('handle')
-			link = f'https://api.hackerone.com/v1/hackers/programs/{handle}'
+def get_program_scope(p_args):
+			link = f'https://api.hackerone.com/v1/hackers/programs/{p_args.handle}'
 			r = make_api_request(link, p_args.username, p_args.apikey)
 			if not r:
-				continue
+				return
 			
 			if r.ok:
 				rdata = r.json()
@@ -107,7 +99,7 @@ def get_scope(programs_queue, p_args):
 					# Time for another IF clause spaghetti.
 					if asset['attributes']['asset_type'] == 'URL':
 
-						if p_args.wildcard or p_args.all and identifier.startswith('*'): # domains.contains() might flag domain.com/* which ain't wildcard domains.
+						if (p_args.wildcard or p_args.all) and identifier.startswith('*'): # domains.contains() might flag domain.com/* which ain't wildcard domains.
 							# TODO: Consider domains that end in wildcard, hackerone.*
 							if p_args.cw:
 								print(cleandomain(identifier).strip())
@@ -146,7 +138,19 @@ def get_scope(programs_queue, p_args):
 							
 			else:
 				# Aaah, something went wrong, either connection issues or Rate limit. Let's worry later about this.
-				continue
+				pass
+
+
+# Am i using Queues right? couldn't popping items off a list have worked just find? But thats a Queue in the end anyways.
+def get_scope(programs_queue, p_args):
+	try:
+		# Infinity here we come, i swear this is for the Queue. Someone teach me about queues and a better way.
+		while True:
+		
+			program = programs_queue.get()
+
+			handle = program['attributes'].get('handle')
+			get_program_scope(handle)
 
 			programs_queue.task_done()	
 	except KeyboardInterrupt:

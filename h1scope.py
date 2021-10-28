@@ -1,16 +1,16 @@
 import os, sys
 import argparse
-from apicalls import make_api_request, get_programs, get_scope
+from apicalls import make_api_request, get_programs, get_scope, get_program_scope
 from queue import Queue
 from threading import Thread
 
-# TODO: Consider scope for a single program.
-VERSION = 1.0
+VERSION = 1.1
 
 def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-u", "--username", default=os.environ.get('H1_USERNAME'), help="Hackerone Username")
 	parser.add_argument("--apikey", default=os.environ.get('H1_APIKEY'), help="Generate APIKEY from https://hackerone.com/settings/api_token/edit")
+	parser.add_argument("--handle", help="Handle for a specific program.")
 	parser.add_argument("--wildcard", action="store_true", help="Get wildcard domains.")
 	parser.add_argument("-cw", action="store_true", help="Clean wildcard domains to pipe to recon tools, *.hackerone.com => hackerone.com")
 	parser.add_argument("--domains", action="store_true")
@@ -48,13 +48,19 @@ def main():
 		print("Seriously? Choose either PRIVATE or PUBLIC programs, or don't specify either to get them all. Smart *ss.", file=sys.stderr)
 		sys.exit(parser.print_usage())
 	
-	programs_queue = Queue()
-	programs_thread = Thread(target=get_programs, args=(programs_queue, p_args), daemon=True).start()
+	if p_args.handle:
+	
+		get_program_scope(p_args)
 
-	get_scope(programs_queue, p_args)
+	else:
+	
+		programs_queue = Queue()
+		programs_thread = Thread(target=get_programs, args=(programs_queue, p_args), daemon=True).start()
 
-	# Do i call this on the thread or Queue?
-	programs_queue.join()
+		get_scope(programs_queue, p_args)
+
+		# Do i call this on the thread or Queue?
+		programs_queue.join()
 
 if __name__ == '__main__':
 	
