@@ -36,7 +36,7 @@ def main():
 		print("Missing USERNAME or APIKEY.", file=sys.stderr)
 		sys.exit(parser.print_usage())
 
-	if not p_args.wildcard or p_args.domains or p_args.cidr or p_args.android or p_args.ios or p_args.code or p_args.other:
+	if not (p_args.wildcard or p_args.domains or p_args.cidr or p_args.android or p_args.ios or p_args.code or p_args.other):
 		print("No specified scope, getting all in scope items.", file=sys.stderr)
 		p_args.all = True
 
@@ -50,7 +50,7 @@ def main():
 	
 	if p_args.handle:
 	
-		get_program_scope(p_args)
+		get_program_scope(p_args=p_args)
 
 	else:
 	

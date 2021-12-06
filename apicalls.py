@@ -80,65 +80,70 @@ def cleandomain(dmn):
 		
 	return domain
 
-def get_program_scope(p_args):
-			link = f'https://api.hackerone.com/v1/hackers/programs/{p_args.handle}'
-			r = make_api_request(link, p_args.username, p_args.apikey)
-			if not r:
-				return
-			
-			if r.ok:
-				rdata = r.json()
-				scope = rdata['relationships']['structured_scopes']['data']
-				for asset in scope:
-					# Not wasting lines of code to give you Outof Scope items, go copy them yourself, even VDPs have OS items.
-					if not asset['attributes']['eligible_for_submission']:
-						continue
+def get_program_scope(p_args={}, handle=''):
+	link = str
+	if handle:
+		link = f'https://api.hackerone.com/v1/hackers/programs/{handle}'
+	else:
+		link = f'https://api.hackerone.com/v1/hackers/programs/{p_args.handle}'
+		
+	r = make_api_request(link, p_args.username, p_args.apikey)
+	if not r:
+		return
+	
+	if r.ok:
+		rdata = r.json()
+		scope = rdata['relationships']['structured_scopes']['data']
+		for asset in scope:
+			# Not wasting lines of code to give you Outof Scope items, go copy them yourself, even VDPs have OS items.
+			if not asset['attributes']['eligible_for_submission']:
+				continue
 
-					identifier = asset['attributes']['asset_identifier']
+			identifier = asset['attributes']['asset_identifier']
 
-					# Time for another IF clause spaghetti.
-					if asset['attributes']['asset_type'] == 'URL':
+			# Time for another IF clause spaghetti.
+			if asset['attributes']['asset_type'] == 'URL':
 
-						if (p_args.wildcard or p_args.all) and identifier.startswith('*'): # domains.contains() might flag domain.com/* which ain't wildcard domains.
-							# TODO: Consider domains that end in wildcard, hackerone.*
-							if p_args.cw:
-								print(cleandomain(identifier).strip())
-							else:
-								print(identifier)
-							continue
-						elif p_args.domains or p_args.all and not identifier.startswith('*'):
-							print(identifier)
+				if (p_args.wildcard or p_args.all) and identifier.startswith('*'): # domains.contains() might flag domain.com/* which ain't wildcard domains.
+					# TODO: Consider domains that end in wildcard, hackerone.*
+					if p_args.cw:
+						print(cleandomain(identifier).strip())
+					else:
+						print(identifier)
+					continue
+				elif p_args.domains or p_args.all and not identifier.startswith('*'):
+					print(identifier)
 
-					elif p_args.cidr or p_args.all and asset['attributes']['asset_type'] == 'CIDR':
-							print(identifier)
+			elif p_args.cidr or p_args.all and asset['attributes']['asset_type'] == 'CIDR':
+					print(identifier)
 
-					elif p_args.code or p_args.all and asset['attributes']['asset_type'] == 'SOURCE_CODE':
-							print(identifier)
+			elif p_args.code or p_args.all and asset['attributes']['asset_type'] == 'SOURCE_CODE':
+					print(identifier)
 
-					elif p_args.android or p_args.all and asset['attributes']['asset_type'] == 'GOOGLE_PLAY_APP_ID':
-							print(identifier)
+			elif p_args.android or p_args.all and asset['attributes']['asset_type'] == 'GOOGLE_PLAY_APP_ID':
+					print(identifier)
 
-					elif p_args.apk or p_args.all and asset['attributes']['asset_type'] == 'OTHER_APK':
-							print(identifier)
+			elif p_args.apk or p_args.all and asset['attributes']['asset_type'] == 'OTHER_APK':
+					print(identifier)
 
-					elif p_args.ios or p_args.all and asset['attributes']['asset_type'] == 'APPLE_STORE_APP_ID':
-							print(identifier)
+			elif p_args.ios or p_args.all and asset['attributes']['asset_type'] == 'APPLE_STORE_APP_ID':
+					print(identifier)
 
-					elif p_args.ipa or p_args.all and asset['attributes']['asset_type'] == 'OTHER_IPA':
-							print(identifier)
+			elif p_args.ipa or p_args.all and asset['attributes']['asset_type'] == 'OTHER_IPA':
+					print(identifier)
 
-					elif p_args.other or p_args.all and asset['attributes']['asset_type'] == 'OTHER':
-							print(identifier)
+			elif p_args.other or p_args.all and asset['attributes']['asset_type'] == 'OTHER':
+					print(identifier)
 
-					elif p_args.hardware or p_args.all and asset['attributes']['asset_type'] == 'HARDWARE':
-							print(identifier)
+			elif p_args.hardware or p_args.all and asset['attributes']['asset_type'] == 'HARDWARE':
+					print(identifier)
 
-					elif p_args.windows or p_args.all and asset['attributes']['asset_type'] == 'WINDOWS_APP_STORE_APP_ID':
-							print(identifier)
-							
-			else:
-				# Aaah, something went wrong, either connection issues or Rate limit. Let's worry later about this.
-				pass
+			elif p_args.windows or p_args.all and asset['attributes']['asset_type'] == 'WINDOWS_APP_STORE_APP_ID':
+					print(identifier)
+					
+	else:
+		# Aaah, something went wrong, either connection issues or Rate limit. Let's worry later about this.
+		pass
 
 
 # Am i using Queues right? couldn't popping items off a list have worked just find? But thats a Queue in the end anyways.
@@ -150,7 +155,7 @@ def get_scope(programs_queue, p_args):
 			program = programs_queue.get()
 
 			handle = program['attributes'].get('handle')
-			get_program_scope(handle)
+			get_program_scope(p_args=p_args, handle=handle)
 
 			programs_queue.task_done()	
 	except KeyboardInterrupt:
