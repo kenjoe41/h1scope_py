@@ -4,7 +4,7 @@ from apicalls import make_api_request, get_programs, get_scope, get_program_scop
 from queue import Queue
 from threading import Thread
 
-VERSION = 1.1
+VERSION = 1.2
 
 def main():
 	parser = argparse.ArgumentParser()
