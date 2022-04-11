@@ -53,7 +53,7 @@ def main():
 		get_program_scope(p_args=p_args)
 
 	else:
-	
+		# TODO: This needs a review. Probably not doing this right.
 		programs_queue = Queue()
 		programs_thread = Thread(target=get_programs, args=(programs_queue, p_args), daemon=True).start()
 
